@@ -251,16 +251,23 @@ contract NFTMarketplace is ERC721URIStorage {
         return address(this).balance;
     }
 
-    // withdraw balance
+
+    /**
+     * @dev function to transfer the balance of the martketplace contract to MarketplaceContract OWNER
+     */
     function withdraw() external {
         uint256 amount = address(this).balance;
         (bool sent, ) = owner.call{value: amount}("");
         require(sent, "Failed to send Ether");
     }
 
-    // Function to receive Ether. msg.data must be empty
+    /**
+     * @dev Function to receive Ether, when msg.data must be empty
+     */
     receive() external payable {}
 
-    // Fallback function is called when msg.data is not empty
+    /**
+     * @dev Function to receive Ether, when msg.data is NOT empty 
+     */
     fallback() external payable {}
 }
