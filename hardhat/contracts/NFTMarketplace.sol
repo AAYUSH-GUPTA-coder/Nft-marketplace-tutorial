@@ -50,7 +50,7 @@ contract NFTMarketplace is ERC721URIStorage {
 
 
     /**
-     * @dev function to Update the listing price of the contract (Price)
+     * @dev function to Update the listing price of the contract (Price user have to list their NFT)
      * @param _listingPrice is updated price of NFT listing
      */
     function updateListingPrice(uint256 _listingPrice) public payable {
@@ -89,8 +89,11 @@ contract NFTMarketplace is ERC721URIStorage {
         return newTokenId;
     }
 
-    // it is private function excuted inside the contract without the calling/interference of user
-    // function of create NFT
+    /**
+     * @dev tranfer the NFT from seller to marketplace smart contract. Basically to list NFT in our marketplace it is private function excuted inside the contract without the calling/interference of user. 
+     * @param tokenId of NFT
+     * @param price of NFT
+     */
     function createMarketItem(uint256 tokenId, uint256 price) private {
         require(price > 0, "Price must be at least 1 wei");
         require(
@@ -105,7 +108,8 @@ contract NFTMarketplace is ERC721URIStorage {
             price,
             false
         );
-    
+
+        // transfer the NFT from seller to marketplace smart contract 
         _transfer(msg.sender, address(this), tokenId);
 
         emit MarketItemCreated(
@@ -117,7 +121,11 @@ contract NFTMarketplace is ERC721URIStorage {
         );
     }
 
-    /* allows someone to resell a token they have purchased */
+    /**
+     * @dev function to allow Buyer of our marketplace to become seller also.
+     * @param tokenId of NFT
+     * @param price of NFT
+     */
     function resellToken(uint256 tokenId, uint256 price) public payable {
         require(
             idToMarketItem[tokenId].owner == msg.sender,
@@ -136,8 +144,11 @@ contract NFTMarketplace is ERC721URIStorage {
         _transfer(msg.sender, address(this), tokenId);
     }
 
-    /* Creates the sale of a marketplace item */
-    /* Transfers ownership of the item, as well as funds between parties */
+    /**
+     * @dev Creates the sale of a marketplace item
+     * Transfers ownership of the item, as well as funds between parties
+     * @param tokenId of the NFT
+     */
     function createMarketSale(uint256 tokenId) public payable {
         uint256 price = idToMarketItem[tokenId].price;
         address seller = idToMarketItem[tokenId].seller;
@@ -149,12 +160,17 @@ contract NFTMarketplace is ERC721URIStorage {
         idToMarketItem[tokenId].sold = true;
         idToMarketItem[tokenId].seller = payable(address(0));
         _itemsSold.increment();
+        // Transfer NFT from martketplace contract to buyer
         _transfer(address(this), msg.sender, tokenId);
-        payable(owner).transfer(listingPrice); // transfer the listing amount to ContractOwner from Seller/NftOnwer
-        payable(seller).transfer(msg.value); // transfer the selling amount to SELLER from Buyer
+        // transfer the listing amount which is store/present in marketplace contract to MarketplaceContractOwner.
+        payable(owner).transfer(listingPrice); 
+        // transfer the selling amount to SELLER from Buyer
+        payable(seller).transfer(msg.value);
     }
 
-    /* Returns all unsold market items */
+    /**
+     * @dev function to fetch all the unsold NFTs
+     */
     function fetchMarketItems() public view returns (MarketItem[] memory) {
         uint256 itemCount = _tokenIds.current();
         uint256 unsoldItemCount = _tokenIds.current() - _itemsSold.current();
@@ -173,7 +189,9 @@ contract NFTMarketplace is ERC721URIStorage {
         return items;
     }
 
-    /* Returns only items that a user has purchased */
+    /**
+     * @dev function to fetch all NFTs that a user/buyer has purchased
+     */
     function fetchMyNFTs() public view returns (MarketItem[] memory) {
         uint256 totalItemCount = _tokenIds.current();
         uint256 itemCount = 0;
@@ -185,7 +203,7 @@ contract NFTMarketplace is ERC721URIStorage {
                 itemCount += 1;
             }
         }
-
+        // created a new array of size(itemCount) name items
         MarketItem[] memory items = new MarketItem[](itemCount);
         for (uint256 i = 0; i < totalItemCount; i++) {
             if (idToMarketItem[i + 1].owner == msg.sender) {
@@ -198,7 +216,10 @@ contract NFTMarketplace is ERC721URIStorage {
         return items;
     }
 
-    /* Returns only items a user has listed */
+
+    /**
+     * @dev function to Returns only items a user has listed
+     */
     function fetchItemsListed() public view returns (MarketItem[] memory) {
         uint256 totalItemCount = _tokenIds.current();
         uint256 itemCount = 0;
@@ -222,7 +243,10 @@ contract NFTMarketplace is ERC721URIStorage {
         return items;
     }
     
-    // get the contract balance
+    
+    /**
+     * @dev function to get the balance of the martketplace contract
+     */
     function getBalance() public view returns (uint256) {
         return address(this).balance;
     }
