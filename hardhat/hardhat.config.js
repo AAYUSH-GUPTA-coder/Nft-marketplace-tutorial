@@ -3,7 +3,7 @@ require("@nomiclabs/hardhat-waffle");
 require("dotenv").config({ path: ".env.local" });
 require("@nomiclabs/hardhat-etherscan");
 
-const privatekey = process.env.privateKey;
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 const ALCHEMY_API_KEY_URL = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_URL;
 
@@ -16,10 +16,10 @@ module.exports = {
       chainId: 1337,
     },
     //  unused configuration commented out for now
-    mumbai: {
-      url: ALCHEMY_API_KEY_URL,
-      accounts: [privatekey],
-    },
+    // mumbai: {
+    //   url: ALCHEMY_API_KEY_URL,
+    //   accounts: [PRIVATE_KEY],
+    // },
   },
   solidity: {
     version: "0.8.4",
