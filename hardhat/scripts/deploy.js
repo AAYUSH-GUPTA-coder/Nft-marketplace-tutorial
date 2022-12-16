@@ -1,5 +1,4 @@
 const hre = require("hardhat");
-const fs = require("fs");
 
 async function main() {
   const NFTMarketplace = await hre.ethers.getContractFactory("NFTMarketplace");
@@ -7,16 +6,9 @@ async function main() {
   await nftMarketplace.deployed();
   console.log("nftMarketplace deployed to:", nftMarketplace.address);
 
-  fs.writeFileSync(
-    "./config.js",
-    `
-  export const marketplaceAddress = "${nftMarketplace.address}"
-  `
-  );
-
   console.log("Sleeping.....");
   // Wait for etherscan to notice that the contract has been deployed
-  await sleep(20000);
+  await sleep(100000); // 100 seconds
 
   // Verify the contract after deploying
   await hre.run("verify:verify", {
