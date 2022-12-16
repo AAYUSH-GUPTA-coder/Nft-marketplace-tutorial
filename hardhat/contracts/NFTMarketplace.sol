@@ -16,6 +16,7 @@ contract NFTMarketplace is ERC721URIStorage {
 
     // the price marketplace get for listing NFT for Sale
     uint256 listingPrice = 0.025 ether;
+    // Address of the owner of NFT-Marketplace
     address payable owner;
 
     // storing market status of each NFT through tokenId => MarketItem
@@ -30,6 +31,7 @@ contract NFTMarketplace is ERC721URIStorage {
         bool sold;
     }
 
+    // event to capture all the details when NFT is created
     event MarketItemCreated(
         uint256 indexed tokenId,
         address seller,
@@ -38,12 +40,19 @@ contract NFTMarketplace is ERC721URIStorage {
         bool sold
     );
 
+    /**
+     * @dev contructor is function that runs only once, when the contract is deployed to set initial values. 
+     */
     constructor() ERC721("Metaverse Tokens", "METT") {
         // setting owner of the contract
         owner = payable(msg.sender);
     }
 
-    /* Updates the listing price of the contract */
+
+    /**
+     * @dev function to Update the listing price of the contract (Price)
+     * @param _listingPrice is updated price of NFT listing
+     */
     function updateListingPrice(uint256 _listingPrice) public payable {
         require(
             owner == msg.sender,
@@ -52,12 +61,20 @@ contract NFTMarketplace is ERC721URIStorage {
         listingPrice = _listingPrice;
     }
 
-    /* Returns the listing price of the contract */
+    
+    /**
+     * @dev function to return the listing price of the NFT
+     * It is read only / view function
+     */
     function getListingPrice() public view returns (uint256) {
         return listingPrice;
     }
 
-    /* Mints a token and lists it in the marketplace */
+    /**
+     * @dev function to create / mint token from our dapp and list it on our marketplace 
+     * @param tokenURI : metadata of the NFT
+     * @param price : price of the NFT 
+     */
     function createToken(string memory tokenURI, uint256 price)
         public
         payable
@@ -88,7 +105,7 @@ contract NFTMarketplace is ERC721URIStorage {
             price,
             false
         );
-
+    
         _transfer(msg.sender, address(this), tokenId);
 
         emit MarketItemCreated(
