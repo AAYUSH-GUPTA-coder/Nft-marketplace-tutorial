@@ -43,7 +43,7 @@ export default function CreateItem() {
       const added = await client.add(file, {
         progress: (prog) => console.log(`received: ${prog}`),
       });
-      // https://collab-nft.infura-ipfs.io
+      // https://collab-nft.infura-ipfs.io 
       const url = `https://collab-nft.infura-ipfs.io/ipfs/${added.path}`;
       // set fileURL
       setFileUrl(url);
