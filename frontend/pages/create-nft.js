@@ -5,7 +5,27 @@ import { useRouter } from "next/router";
 import Web3Modal from "web3modal";
 import { abi, MARKET_PLACE_ADDRESS } from "../constants";
 
-const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
+// const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
+// const client = ipfsHttpClient(
+// );
+
+//! changes
+const projectId = process.env.INFURA_IPFS_PROJECT_ID;
+const projectSecret = process.env.INFURA_IPFS_PROJECT_SECRET;
+const projectIdAndSecret = `${projectId}:${projectSecret}`;
+const auth = `Basic ${Buffer.from(projectIdAndSecret).toString("base64")}`;
+
+const client = create({
+  // https://collab-nft.infura-ipfs.io
+  host: "collab-nft.infura-ipfs.io",
+  port: 5001,
+  protocol: "https",
+  headers: {
+    authorization: auth,
+  },
+});
+
+//!
 
 export default function CreateItem() {
   const [fileUrl, setFileUrl] = useState(null);
@@ -23,12 +43,14 @@ export default function CreateItem() {
       const added = await client.add(file, {
         progress: (prog) => console.log(`received: ${prog}`),
       });
-      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+      // https://collab-nft.infura-ipfs.io
+      const url = `https://collab-nft.infura-ipfs.io/ipfs/${added.path}`;
       // set fileURL
       setFileUrl(url);
     } catch (error) {
       console.log("Error uploading file: ", error);
     }
+    
   }
 
   async function uploadToIPFS() {

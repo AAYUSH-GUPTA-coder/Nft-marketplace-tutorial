@@ -1,3 +1,5 @@
+// This is the main entry-point of the app, and will be the view where we query for the NFTs for sale and render them to the screen.
+
 import { ethers } from "ethers";
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
@@ -18,6 +20,7 @@ export default function Home() {
     const provider = new ethers.providers.JsonRpcProvider(
       process.env.NEXT_PUBLIC_ALCHEMY_API_KEY_URL
     );
+    // creating a instance of our smart contract (NFT Marketplace)
     const contract = new ethers.Contract(MARKET_PLACE_ADDRESS, abi, provider);
     const data = await contract.fetchMarketItems();
 
@@ -72,7 +75,7 @@ export default function Home() {
     const provider = await web3ModalRef.current.connect();
     const web3Provider = new ethers.providers.Web3Provider(provider);
 
-    // If user is not connected to the Rinkeby network, let them know and throw an error
+    // If user is not connected to the mumbai network, let them know and throw an error
     const { chainId } = await web3Provider.getNetwork();
     if (chainId !== 80001) {
       window.alert("Change the network to Mumbai");
