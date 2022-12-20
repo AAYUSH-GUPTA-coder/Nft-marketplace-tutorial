@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ethers } from "ethers";
-import { create as ipfsHttpClient } from "ipfs-http-client";
+import { create } from "ipfs-http-client";
+// import { create as ipfsHttpClient } from "ipfs-http-client";
 import { useRouter } from "next/router";
 import Web3Modal from "web3modal";
 import { abi, MARKET_PLACE_ADDRESS } from "../constants";
@@ -9,23 +10,26 @@ import { abi, MARKET_PLACE_ADDRESS } from "../constants";
 // const client = ipfsHttpClient(
 // );
 
-//! changes
-const projectId = process.env.INFURA_IPFS_PROJECT_ID;
-const projectSecret = process.env.INFURA_IPFS_PROJECT_SECRET;
-const projectIdAndSecret = `${projectId}:${projectSecret}`;
-const auth = `Basic ${Buffer.from(projectIdAndSecret).toString("base64")}`;
+// //! changes
+// async function uploadImage() {
+//   const projectId = process.env.INFURA_IPFS_PROJECT_ID;
+//   console.log(projectId);
+//   const projectSecret = process.env.INFURA_IPFS_PROJECT_SECRET;
+//   const projectIdAndSecret = `${projectId}:${projectSecret}`;
+//   const auth = `Basic ${Buffer.from(projectIdAndSecret).toString("base64")}`;
 
-const client = create({
-  // https://collab-nft.infura-ipfs.io
-  host: "collab-nft.infura-ipfs.io",
-  port: 5001,
-  protocol: "https",
-  headers: {
-    authorization: auth,
-  },
-});
-
-//!
+//   const client = await create({
+//     // https://collab-nft.infura-ipfs.io
+//     host: "collab-nft.infura-ipfs.io",
+//     port: 5001,
+//     protocol: "https",
+//     headers: {
+//       authorization: auth,
+//     },
+//   });
+//   console.log("==>", client);
+//   //!
+// }
 
 export default function CreateItem() {
   const [fileUrl, setFileUrl] = useState(null);
@@ -34,6 +38,26 @@ export default function CreateItem() {
     name: "",
     description: "",
   });
+  // ---------------
+  //! testing
+  const projectId = process.env.INFURA_IPFS_PROJECT_ID;
+  console.log(projectId);
+  const projectSecret = process.env.INFURA_IPFS_PROJECT_SECRET;
+  const projectIdAndSecret = `${projectId}:${projectSecret}`;
+  const auth = `Basic ${Buffer.from(projectIdAndSecret).toString("base64")}`;
+
+  const client = create({
+    // https://collab-nft.infura-ipfs.io
+    host: "collab-nft.infura-ipfs.io",
+    port: 5001,
+    protocol: "https",
+    headers: {
+      authorization: auth,
+    },
+  });
+  console.log("==>", client);
+  //!
+  // ----------------
   const router = useRouter();
 
   async function onChange(e) {
@@ -43,14 +67,19 @@ export default function CreateItem() {
       const added = await client.add(file, {
         progress: (prog) => console.log(`received: ${prog}`),
       });
-      // https://collab-nft.infura-ipfs.io 
+      // https://collab-nft.infura-ipfs.io
       const url = `https://collab-nft.infura-ipfs.io/ipfs/${added.path}`;
       // set fileURL
-      setFileUrl(url);
+      //! testing
+      client.pin.add(added.path).then((res) => {
+        console.log(res);
+        setFileUrl(url);
+      });
+      //!
+      // setFileUrl(url);
     } catch (error) {
       console.log("Error uploading file: ", error);
     }
-    
   }
 
   async function uploadToIPFS() {
