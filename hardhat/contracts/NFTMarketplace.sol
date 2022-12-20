@@ -11,7 +11,9 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 contract NFTMarketplace is ERC721URIStorage {
     using Counters for Counters.Counter;
     // helps us to Use Counter library to increase TokenID of NFT
+    //_tokenIds variable has the most recent minted tokenId
     Counters.Counter private _tokenIds;
+    //Keeps track of the number of items sold on the marketplace
     Counters.Counter private _itemsSold;
 
     // the price marketplace get for listing NFT for Sale
@@ -80,9 +82,11 @@ contract NFTMarketplace is ERC721URIStorage {
         payable
         returns (uint256)
     {
+        //Increment the tokenId counter, which is keeping track of the number of minted NFTs
         _tokenIds.increment();
         uint256 newTokenId = _tokenIds.current();
 
+        //Mint the NFT with tokenId newTokenId to the address who called createToken
         _mint(msg.sender, newTokenId);
         _setTokenURI(newTokenId, tokenURI);
         createMarketItem(newTokenId, price);
