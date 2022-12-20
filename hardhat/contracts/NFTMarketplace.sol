@@ -88,7 +88,11 @@ contract NFTMarketplace is ERC721URIStorage {
 
         //Mint the NFT with tokenId newTokenId to the address who called createToken
         _mint(msg.sender, newTokenId);
+
+        //Map the tokenId to the tokenURI (which is an IPFS URL with the NFT metadata)
         _setTokenURI(newTokenId, tokenURI);
+
+        //Helper function to update Global variables and emit an event
         createMarketItem(newTokenId, price);
         return newTokenId;
     }
@@ -105,6 +109,7 @@ contract NFTMarketplace is ERC721URIStorage {
             "Price must be equal to listing price"
         );
 
+        //Update the mapping of tokenId's to Token details, useful for retrieval functions
         idToMarketItem[tokenId] = MarketItem(
             tokenId,
             payable(msg.sender),
@@ -116,6 +121,7 @@ contract NFTMarketplace is ERC721URIStorage {
         // transfer the NFT from seller to marketplace smart contract 
         _transfer(msg.sender, address(this), tokenId);
 
+        //Emit the event for successful transfer. The frontend parses this message and updates the end user
         emit MarketItemCreated(
             tokenId,
             msg.sender,
@@ -160,6 +166,7 @@ contract NFTMarketplace is ERC721URIStorage {
             msg.value == price,
             "Please submit the asking price in order to complete the purchase"
         );
+        // update the details of the token
         idToMarketItem[tokenId].owner = payable(msg.sender);
         idToMarketItem[tokenId].sold = true;
         idToMarketItem[tokenId].seller = payable(address(0));
